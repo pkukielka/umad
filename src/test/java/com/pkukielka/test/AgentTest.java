@@ -1,5 +1,6 @@
 package com.pkukielka.test;
 
+import com.pkukielka.MethodRewriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,6 +33,7 @@ public class AgentTest {
 
     @Before
     public void setUp() {
+        MethodRewriter.clearState();
         failed = false;
     }
 
@@ -53,5 +55,12 @@ public class AgentTest {
             }
         });
         assert (!failed);
+    }
+
+    @Test
+    public void runInterestingMethodInSingleThread() throws InterruptedException {
+        for (int i = 0; i < 3; i++) {
+            new MyTest().interestingMethod();
+        }
     }
 }

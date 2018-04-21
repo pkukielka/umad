@@ -17,7 +17,7 @@ public class AccessMonitorTransformer implements ClassFileTransformer {
 
         instrumentation.addTransformer(this, true);
 
-        System.out.println("TracingTransformer active");
+        System.out.println("[Info] TracingTransformer active");
     }
 
     public byte[] transform(final ClassLoader loader, final String className, final Class classBeingRedefined,
@@ -52,9 +52,9 @@ public class AccessMonitorTransformer implements ClassFileTransformer {
                 classpool.removeClassPath(loaderClassPath);
                 classpool.removeClassPath(byteArrayClassPath);
 
-                System.out.println("Transformed " + classNameDotted);
+                System.out.println("[Info] Transformed " + classNameDotted);
             } catch (Exception ex) {
-                System.err.println("Unable to transform: " + classNameDotted);
+                System.err.println("[Error] Unable to transform: " + classNameDotted);
                 ex.printStackTrace();
             }
         }
