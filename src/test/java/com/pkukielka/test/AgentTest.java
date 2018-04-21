@@ -1,23 +1,57 @@
 package com.pkukielka.test;
 
+import org.junit.Before;
 import org.junit.Test;
 
 
 public class AgentTest {
-
-    class MyTest {
-        void someMethod() {
-            System.out.println("someMethod");
+    private class MyTest {
+        void interestingMethod() {
         }
+
         void otherMethod() {
-            System.out.println("otherMethod");
         }
     }
 
+    private boolean failed = false;
+
+    Thread.UncaughtExceptionHandler uncaughtExceptionHandler = new Thread.UncaughtExceptionHandler() {
+        public void uncaughtException(Thread th, Throwable ex) {
+            if (ex.getClass() == IllegalThreadStateException.class) failed = true;
+        }
+    };
+
+    private void startThreads(Runnable r) throws InterruptedException {
+        for (int i = 0; i < 3; i++) {
+            Thread t = new Thread(r);
+            t.setUncaughtExceptionHandler(uncaughtExceptionHandler);
+            t.start();
+            t.join();
+        }
+    }
+
+    @Before
+    public void setUp() {
+        failed = false;
+    }
+
     @Test
-    public void runWithAgent() {
-        MyTest t = new MyTest();
-        t.someMethod();
-        t.otherMethod();
+    public void runInterestingMethodInMultipleThreads() throws InterruptedException {
+        startThreads(new Runnable() {
+            public void run() {
+                new MyTest().interestingMethod();
+            }
+        });
+        assert (failed);
+    }
+
+    @Test
+    public void runOtherMethodInMultipleThreads() throws InterruptedException {
+        startThreads(new Runnable() {
+            public void run() {
+                new MyTest().otherMethod();
+            }
+        });
+        assert (!failed);
     }
 }

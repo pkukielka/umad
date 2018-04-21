@@ -1,5 +1,7 @@
 package com.pkukielka;
 
+import com.typesafe.config.Config;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -7,8 +9,13 @@ import java.util.regex.Pattern;
 public class ClassMethodSelector {
     private final List<ClassMethodDefinition> definitionList = new ArrayList<ClassMethodDefinition>();
 
-    public void addDefinition(final String classNameDotted, final String methodName) {
-        definitionList.add(new ClassMethodDefinition(classNameDotted, methodName));
+    ClassMethodSelector() {
+        for (Config include : (new AppConfig()).includes) {
+            definitionList.add(new ClassMethodDefinition(
+                    include.getString("class"),
+                    include.getString("method")
+            ));
+        }
     }
 
     public boolean shouldTransformClass(final String classNameDotted) {
