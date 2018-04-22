@@ -7,13 +7,20 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class ClassMethodSelector {
-    private final List<ClassMethodDefinition> definitionList = new ArrayList<ClassMethodDefinition>();
+    private final List<ClassMethodDefinition> includes = new ArrayList<ClassMethodDefinition>();
+    private final List<ClassMethodDefinition> excludes = new ArrayList<ClassMethodDefinition>();
 
     ClassMethodSelector() {
         for (Config include : (new AppConfig()).includes) {
-            definitionList.add(new ClassMethodDefinition(
+            includes.add(new ClassMethodDefinition(
                     include.getString("class"),
                     include.getString("method")
+            ));
+        }
+        for (Config exclude : (new AppConfig()).excludes) {
+            excludes.add(new ClassMethodDefinition(
+                    exclude.getString("class"),
+                    exclude.getString("method")
             ));
         }
     }
@@ -27,12 +34,20 @@ public class ClassMethodSelector {
     }
 
     private boolean doesDefinitionMatch(final ClassMethodDefinition definition, final String classNameDotted, final String methodName) {
-        return definition.classRegex.matcher(classNameDotted).matches() && (methodName == null || definition.methodRegex.matcher(methodName).matches());
+        return definition.classRegex.matcher(classNameDotted).matches() &&
+                (methodName == null || definition.methodRegex.matcher(methodName).matches());
     }
 
     private boolean isMatchingDefinition(final String classNameDotted, final String methodName) {
-        for (final ClassMethodDefinition definition : definitionList) {
-            if (doesDefinitionMatch(definition, classNameDotted, methodName)) {
+        if (methodName != null) {
+            for (final ClassMethodDefinition exclude : excludes) {
+                if (doesDefinitionMatch(exclude, classNameDotted, methodName)) {
+                    return false;
+                }
+            }
+        }
+        for (final ClassMethodDefinition include : includes) {
+            if (doesDefinitionMatch(include, classNameDotted, methodName)) {
                 return true;
             }
         }

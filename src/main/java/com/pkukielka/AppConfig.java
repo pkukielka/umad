@@ -11,12 +11,18 @@ public class AppConfig {
     public boolean shouldThrowExceptions = true;
     public boolean shouldPrintStackTrace = false;
     public List<? extends Config> includes = new ArrayList<Config>();
+    public List<? extends Config> excludes = new ArrayList<Config>();
+
 
     public AppConfig() {
         Config conf = ConfigFactory.load();
 
         if (conf == null || !conf.hasPath("umad")) return;
         else conf = conf.getConfig("umad");
+
+        if (conf.hasPath("excludes")) {
+            this.excludes = conf.getConfigList("excludes");
+        }
 
         if (conf.hasPath("includes")) {
             this.includes = conf.getConfigList("includes");
