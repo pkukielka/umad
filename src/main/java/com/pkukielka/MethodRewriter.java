@@ -48,6 +48,7 @@ public class MethodRewriter {
 
                 if (conf.shouldPrintStackTrace) {
                     System.out.println("[WARN] " + msg);
+                    (new Throwable("")).printStackTrace();
                 }
 
                 if (conf.shouldThrowExceptions) {
@@ -59,8 +60,10 @@ public class MethodRewriter {
 
     public void editMethod(final CtMethod editableMethod) throws CannotCompileException {
         String methodName = editableMethod.getLongName();
-        String that = ((editableMethod.getModifiers() & AccessFlag.STATIC) == 0) ? "System.identityHashCode(this)" : "0";
-        editableMethod.insertBefore(String.format("com.pkukielka.MethodRewriter.logUnsafeMethodCalls(\"%s\", %s);",
-                methodName, that));
+        if ((editableMethod.getModifiers() & AccessFlag.STATIC) == 0) {
+
+            editableMethod.insertBefore(
+                    String.format("com.pkukielka.MethodRewriter.logUnsafeMethodCalls(\"%s\", System.identityHashCode(this));", methodName));
+        }
     }
 }

@@ -82,7 +82,7 @@ public class AgentTest {
                 MyTest.interestingStaticMethod();
             }
         });
-        assert (failed);
+        assert (!failed);
     }
 
     @Test
