@@ -39,11 +39,9 @@ public class ClassMethodSelector {
     }
 
     private boolean isMatchingDefinition(final String classNameDotted, final String methodName) {
-        if (methodName != null) {
-            for (final ClassMethodDefinition exclude : excludes) {
-                if (doesDefinitionMatch(exclude, classNameDotted, methodName)) {
-                    return false;
-                }
+        for (final ClassMethodDefinition exclude : excludes) {
+            if (doesDefinitionMatch(exclude, classNameDotted, methodName)) {
+                return false;
             }
         }
         for (final ClassMethodDefinition include : includes) {
