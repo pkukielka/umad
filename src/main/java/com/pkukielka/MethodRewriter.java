@@ -47,8 +47,12 @@ public class MethodRewriter {
                 alreadyReported.add(methodName);
 
                 if (conf.shouldPrintStackTrace) {
-                    System.out.println("[WARN] " + msg);
-                    (new Throwable("")).printStackTrace();
+                    StringBuilder str = new StringBuilder("[WARN] " + msg + "\n");
+                    StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+                    for (int i = 1; i < stackTrace.length; i++) {
+                        str.append("    " + stackTrace[i].toString() + "\n");
+                    }
+                    System.out.println(str.toString());
                 }
 
                 if (conf.shouldThrowExceptions) {

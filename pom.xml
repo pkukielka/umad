@@ -13,7 +13,7 @@
   <groupId>com.pkukielka.umad</groupId>
   <artifactId>umad</artifactId>
   <packaging>jar</packaging>
-  <version>SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
 
   <name>umad</name>
   <description>Unsynchronized Memory Access Detector</description>
