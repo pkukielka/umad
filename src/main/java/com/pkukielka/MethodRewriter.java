@@ -54,6 +54,7 @@ public class MethodRewriter {
                 StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 
                 String calledFrom = stackTrace[realStackStartIndex + 1].toString();
+
                 Pattern ifCalledFromPattern = Pattern.compile(ifCalledFrom);
                 methodName = (ifCalledFrom.equals("null")) ? methodName :
                         (ifCalledFromPattern.matcher(calledFrom).matches() ? calledFrom : null);
