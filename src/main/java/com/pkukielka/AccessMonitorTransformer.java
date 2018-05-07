@@ -38,8 +38,9 @@ public class AccessMonitorTransformer implements ClassFileTransformer {
                 final CtClass editableClass = classpool.get(classNameDotted);
                 final CtMethod declaredMethods[] = editableClass.getDeclaredMethods();
                 for (final CtMethod editableMethod : declaredMethods) {
-                    if (!editableMethod.isEmpty() && classMethodSelector.shouldTransform(classNameDotted, editableMethod.getName())) {
-                        methodRewriter.editMethod(editableMethod);
+                    ClassMethodSelector.ClassMethodDefinition md = classMethodSelector.findMatchingDefinition(classNameDotted, editableMethod);
+                    if (md != null) {
+                        methodRewriter.editMethod(editableMethod, md.ifCalledFrom);
                     }
                 }
 
