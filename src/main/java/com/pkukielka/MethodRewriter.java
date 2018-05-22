@@ -16,12 +16,14 @@ class LastAccess {
     long threadId;
     int hashCode;
     String stackTrace;
+    String threadName;
 
-    LastAccess(long timestamp, long threadId, int hashCode) {
+    LastAccess(long timestamp, long threadId, int hashCode, String threadName) {
         this.timestamp = timestamp;
         this.threadId = threadId;
         this.hashCode = hashCode;
         this.stackTrace = null;
+        this.threadName = threadName;
     }
 }
 
@@ -43,7 +45,7 @@ public class MethodRewriter {
             Thread thread = Thread.currentThread();
             Long currentTimestamp = System.currentTimeMillis();
 
-            LastAccess current = new LastAccess(currentTimestamp, thread.getId(), hashCode);
+            LastAccess current = new LastAccess(currentTimestamp, thread.getId(), hashCode, thread.getName());
             LastAccess last = methodCalls.put(methodName, current);
 
             if (last != null &&
@@ -60,7 +62,9 @@ public class MethodRewriter {
                         (ifCalledFromPattern.matcher(calledFrom).matches() ? calledFrom : null);
 
                 if (methodName != null && alreadyReported.add(methodName)) {
-                    String msg = String.format("Method accessed from multiple threads: %s", methodName);
+                    String msg = String.format("Method accessed from multiple threads (%s, %s): %s",
+                            last.threadName, current.threadName, methodName);
+
                     StringBuilder str = new StringBuilder("[WARN] " + msg + "\n");
                     for (int i = realStackStartIndex; i < stackTrace.length; i++) {
                         str.append("    ").append(stackTrace[i].toString()).append("\n");
